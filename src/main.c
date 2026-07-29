@@ -34,6 +34,10 @@ bool read_comm(int pid, char *buffer, size_t size){
         fclose(fptr);
         return false;
     }
+    char *newline = strchr(buffer, '\n');
+    if (newline != NULL) {
+        *newline = '\0';
+    }
     
     fclose(fptr);
     printf("%s  ", buffer);
@@ -49,7 +53,7 @@ bool read_exe(int pid, char *buffer, size_t size){
         return false;
     }
     buffer[len] = '\0';
-    printf("%s\n", buffer);
+    printf("%s", buffer);
     return true;
 }
 
@@ -65,7 +69,7 @@ int main(){
     while ((entry = readdir(dir)) != NULL){
         if (is_numeric(entry->d_name)){
             int PID = atoi(entry->d_name);
-            printf("Found file: %d  ", PID);
+            printf("\nFound file: %d  ", PID);
             char comm_buffer[256];
             read_comm(PID, comm_buffer, sizeof(comm_buffer));
             char exe_buffer[256];
