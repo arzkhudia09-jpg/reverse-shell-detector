@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 bool is_numeric(const char *name){
     if (name == NULL){
@@ -24,12 +25,31 @@ bool read_comm(int pid, char *buffer, size_t size){
     snprintf(path, sizeof(path),  "/proc/%d/comm", pid);
     FILE *fptr = fopen(path, "r");
     if (fptr == NULL){
-        perror("Failed to open /proc/");
+        perror("Failed to open /proc/*/comm\n");
         return false;
     }
-    fgets(buffer, size, fptr);
+    char *result = fgets(buffer, size, fptr);
+    if (result == NULL){
+        printf("Something went wrong (EOF or read error)\n");
+        fclose(fptr);
+        return false;
+    }
+    
     fclose(fptr);
-    printf("%s", buffer);
+    printf("%s  ", buffer);
+    return true;
+}
+
+bool read_exe(int pid, char *buffer, size_t size){
+    char path[256];
+    snprintf(path, sizeof(path),  "/proc/%d/exe", pid);
+    ssize_t len = readlink(path, buffer, size);
+    if (len == -1){
+        perror("Failed to open /proc/*/exe\n");
+        return false;
+    }
+    buffer[len] = '\0';
+    printf("%s\n", buffer);
     return true;
 }
 
@@ -37,7 +57,7 @@ int main(){
 
     DIR *dir = opendir("/proc/");
     if (dir == NULL){
-        perror("Failed to open /proc/");
+        perror("Failed to open /proc/\n");
         return 1;
     }
 
@@ -45,13 +65,15 @@ int main(){
     while ((entry = readdir(dir)) != NULL){
         if (is_numeric(entry->d_name)){
             int PID = atoi(entry->d_name);
-            printf("Found file: %d\n", PID);
+            printf("Found file: %d  ", PID);
             char comm_buffer[256];
-            read_comm(PID, comm_buffer, 256);
+            read_comm(PID, comm_buffer, sizeof(comm_buffer));
+            char exe_buffer[256];
+            read_exe(PID, exe_buffer, sizeof(exe_buffer) - 1);
         }
     }
 
     closedir(dir);
 
     return 0;
-};
+}
