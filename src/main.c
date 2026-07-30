@@ -95,6 +95,17 @@ bool read_status(int PID, ProcessInfo *process){
     return true;
 }
 
+bool load_process_info(int pid, ProcessInfo *process){
+    if (!read_comm(pid, process->name, sizeof(process->name))){
+        return false;
+    }
+    if (!read_exe(pid, process->exe, sizeof(process->exe))){
+        return false;
+    }
+    read_status(pid, process);
+    return true;
+}
+
 int main(){
 
     DIR *dir = opendir("/proc/");
@@ -109,15 +120,11 @@ int main(){
         if (is_numeric(entry->d_name)){
             int PID = atoi(entry->d_name);
             ProcessInfo process = {0};
-            if (!read_comm(PID, process.name, sizeof(process.name))){
+            if (!load_process_info(PID, &process)){
                 continue;
             }
-            if (!read_exe(PID, process.exe, sizeof(process.exe))){
-                continue;
-            }
-            read_status(PID, &process);
             printf("\n========================\n");
-            printf("Found file: %d  ", PID);
+            printf("Found file: %d\n", PID);
             printf("Name: %s\n", process.name);
             printf("State: %s\n", process.state);
             printf("PID: %d\n", process.pid);
