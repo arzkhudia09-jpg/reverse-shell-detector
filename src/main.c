@@ -6,6 +6,16 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+typedef struct{
+    char name[64];
+    char exe[256];
+    char state[32];
+    int pid;
+    int ppid;
+    int uid;
+    int threads;
+} ProcessInfo;
+
 bool is_numeric(const char *name){
     if (name == NULL){
         return false;
@@ -16,7 +26,6 @@ bool is_numeric(const char *name){
         }
         name++;
     };
-
     return true;
 }
 
@@ -40,20 +49,49 @@ bool read_comm(int pid, char *buffer, size_t size){
     }
     
     fclose(fptr);
-    printf("%s  ", buffer);
     return true;
 }
 
 bool read_exe(int pid, char *buffer, size_t size){
     char path[256];
     snprintf(path, sizeof(path),  "/proc/%d/exe", pid);
-    ssize_t len = readlink(path, buffer, size);
+    ssize_t len = readlink(path, buffer, size - 1);
     if (len == -1){
-        perror("Failed to open /proc/*/exe\n");
+        buffer[0] = '\0';
         return false;
     }
+
     buffer[len] = '\0';
-    printf("%s", buffer);
+    return true;
+}
+
+bool read_status(int PID, ProcessInfo *process){
+    char path[256];
+    snprintf(path, sizeof(path),  "/proc/%d/status", PID);
+    FILE *fptr = fopen(path, "r");
+    if (fptr == NULL){
+        perror("Failed to open /proc/*/status\n");
+        return false;
+    }
+    char buffer[256];
+
+    while (fgets(buffer, sizeof(buffer), fptr) != NULL){
+        if (buffer[0] == '\0' || buffer[0] == '#'){
+            continue;
+        }
+        if (sscanf(buffer, "State:\t%31[^\n]", process->state) == 1){
+        }
+        if (sscanf(buffer, "Pid: %d", &process->pid) == 1){
+        }
+        if (sscanf(buffer, "PPid: %d", &process->ppid) == 1){
+        }
+        if (sscanf(buffer, "Uid: %d", &process->uid) == 1){
+        }
+        if (sscanf(buffer, "Threads: %d", &process->threads) == 1){
+        }
+    }
+    
+    fclose(fptr);
     return true;
 }
 
@@ -65,15 +103,28 @@ int main(){
         return 1;
     }
 
+
     struct dirent *entry;
     while ((entry = readdir(dir)) != NULL){
         if (is_numeric(entry->d_name)){
             int PID = atoi(entry->d_name);
-            printf("\nFound file: %d  ", PID);
-            char comm_buffer[256];
-            read_comm(PID, comm_buffer, sizeof(comm_buffer));
-            char exe_buffer[256];
-            read_exe(PID, exe_buffer, sizeof(exe_buffer) - 1);
+            ProcessInfo process = {0};
+            if (!read_comm(PID, process.name, sizeof(process.name))){
+                continue;
+            }
+            if (!read_exe(PID, process.exe, sizeof(process.exe))){
+                continue;
+            }
+            read_status(PID, &process);
+            printf("\n========================\n");
+            printf("Found file: %d  ", PID);
+            printf("Name: %s\n", process.name);
+            printf("State: %s\n", process.state);
+            printf("PID: %d\n", process.pid);
+            printf("PPID: %d\n", process.ppid);
+            printf("UID: %d\n", process.uid);
+            printf("Threads: %d\n", process.threads);
+            printf("========================\n");
         }
     }
 
