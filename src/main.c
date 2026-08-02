@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <dirent.h>
 #include "process.h"
+#include "detector.h"
+
 
 int main(){
 
@@ -19,6 +21,8 @@ int main(){
             if (!load_process_info(PID, &process)){
                 continue;
             }
+            DetectionResut result = analyze_process(&process);
+
             printf("\n========================\n");
             printf("Found file: %d\n", PID);
             printf("Name: %s\n", process.name);
@@ -28,6 +32,10 @@ int main(){
             printf("UID: %d\n", process.uid);
             printf("Threads: %d\n", process.threads);
             printf("========================\n");
+
+            printf("Risk Score: %d\n", result.risk_score);
+            printf("Suspicious %s\n", result.suspicious ? "Yes" : "No");
+            printf("Reason\t: %s\n", result.reason);
         }
     }
 
