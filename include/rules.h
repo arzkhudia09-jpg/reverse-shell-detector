@@ -5,5 +5,6 @@
 #include "process.h"
 
 bool rule_temp_directory(const ProcessInfo *process);
+bool rule_deleted_executable(const ProcessInfo *process);
 
 #endif

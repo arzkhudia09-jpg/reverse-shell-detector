@@ -8,7 +8,7 @@
 
 
 
-bool is_numeric(const char *name){
+bool proc_is_numeric(const char *name){
     if (name == NULL){
         return false;
     }
@@ -88,12 +88,12 @@ bool proc_read_status(int PID, ProcessInfo *process){
 }
 
 bool load_process_info(int pid, ProcessInfo *process){
-    if (!read_comm(pid, process->name, sizeof(process->name))){
+    if (!proc_read_comm(pid, process->name, sizeof(process->name))){
         return false;
     }
-    if (!read_exe(pid, process->exe, sizeof(process->exe))){
+    if (!proc_read_exe(pid, process->exe, sizeof(process->exe))){
         return false;
     }
-    read_status(pid, process);
+    proc_read_status(pid, process);
     return true;
 }

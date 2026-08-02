@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <dirent.h>
 #include "process.h"
 #include "detector.h"
@@ -15,13 +16,13 @@ int main(){
 
     struct dirent *entry;
     while ((entry = readdir(dir)) != NULL){
-        if (is_numeric(entry->d_name)){
+        if (proc_is_numeric(entry->d_name)){
             int PID = atoi(entry->d_name);
             ProcessInfo process = {0};
             if (!load_process_info(PID, &process)){
                 continue;
             }
-            DetectionResut result = analyze_process(&process);
+            DetectionResult result = analyze_process(&process);
 
             printf("\n========================\n");
             printf("Found file: %d\n", PID);

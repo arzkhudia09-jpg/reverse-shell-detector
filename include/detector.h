@@ -3,6 +3,8 @@
 
 #include <stdbool.h>
 #include "process.h"
+#include "rules.h"
+
 
 typedef struct {
     bool suspicious;

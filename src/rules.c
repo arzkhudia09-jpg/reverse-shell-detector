@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "rules.h"
 #include <string.h>
 
@@ -19,3 +20,12 @@ bool rule_temp_directory(const ProcessInfo *process){
     return false;
 }
 
+bool rule_deleted_executable(const ProcessInfo *process){
+    char searchString[] = "(deleted)";
+
+    if (strstr(process->exe, searchString) != NULL){
+        return true;
+    }
+
+    return false;
+}
