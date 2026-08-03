@@ -29,3 +29,25 @@ bool rule_deleted_executable(const ProcessInfo *process){
 
     return false;
 }
+
+bool rule_parent_process(const ProcessInfo *process){
+    const char *parent_name[] = {
+        "python",
+        "perl",
+        "nc",
+        "ncat",
+        "socat",
+        "bash",
+        "sh"
+    };
+
+    size_t count_name = sizeof(parent_name)/sizeof(parent_name[0]);
+
+    for (size_t i = 0; i < count_name; i++){
+        if (strncmp(process->parent_process_name, parent_name[i], strlen(parent_name[i])) == 0){
+            return true;
+        }
+    }
+    
+    return false;
+}

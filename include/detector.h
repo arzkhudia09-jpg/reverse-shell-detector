@@ -9,7 +9,7 @@
 typedef struct {
     bool suspicious;
     int risk_score;
-    char reason[256];
+    char reason[512];
 } DetectionResult;
 
 DetectionResult analyze_process(const ProcessInfo *process);

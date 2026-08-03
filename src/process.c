@@ -95,5 +95,10 @@ bool load_process_info(int pid, ProcessInfo *process){
         return false;
     }
     proc_read_status(pid, process);
+    
+    if (!proc_read_comm(process->ppid, process->parent_process_name, sizeof(process->parent_process_name))){
+        return false;
+    }
+    
     return true;
 }

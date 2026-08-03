@@ -32,11 +32,11 @@ int main(){
             printf("PPID: %d\n", process.ppid);
             printf("UID: %d\n", process.uid);
             printf("Threads: %d\n", process.threads);
-            printf("========================\n");
-
+            
             printf("Risk Score: %d\n", result.risk_score);
             printf("Suspicious %s\n", result.suspicious ? "Yes" : "No");
             printf("Reason\t: %s\n", result.reason);
+            printf("========================\n");
         }
     }
 

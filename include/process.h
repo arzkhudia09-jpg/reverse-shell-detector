@@ -8,6 +8,7 @@ typedef struct{
     char name[64];
     char exe[256];
     char state[32];
+    char parent_process_name[64];
     int pid;
     int ppid;
     int uid;
