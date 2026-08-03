@@ -51,3 +51,36 @@ bool rule_parent_process(const ProcessInfo *process){
     
     return false;
 }
+
+
+bool rule_suspicious_name(const ProcessInfo *process){
+    const char *suspicious_names[] = {
+        "bash",
+        "sh",
+        "dash",
+        "zsh",
+        "python",
+        "python3",
+        "perl",
+        "ruby",
+        "lua",
+        "php",
+        "nc",
+        "ncat",
+        "netcat",
+        "socat",
+        "busybox",
+        "curl",
+        "wget"
+    };
+
+    size_t count_name = sizeof(suspicious_names)/sizeof(suspicious_names[0]);
+
+    for (size_t i = 0; i < count_name; i++){
+        if (strcmp(process->name, suspicious_names[i]) == 0){
+            return true;
+        }
+    }
+    
+    return false;
+}

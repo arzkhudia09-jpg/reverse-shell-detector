@@ -9,7 +9,9 @@ DetectionResult analyze_process(const ProcessInfo *process){
     result.reason[0] = '\0';
     bool rule_temp_dir = rule_temp_directory(process);
     bool rule_deleted_exe = rule_deleted_executable(process);
-    bool rule_parent = rule_parent_process(process);
+    bool rule_parent_name = rule_parent_process(process);
+    bool rule_suspicious_process = rule_suspicious_name(process);
+
     if (rule_temp_dir){
 
         result.risk_score += 30;
@@ -25,10 +27,16 @@ DetectionResult analyze_process(const ProcessInfo *process){
         strcat(result.reason, "\n\t• ⚠️ Running process points to a deleted executable..\nConfidence: 40%%");
     }
 
-    if (rule_parent){
+    if (rule_parent_name){
         result.suspicious = true;
         result.risk_score += 20;
         strcat(result.reason, "\n\t• ⚠️ Running process points suspicious parent process.\nConfidence: 20%%");        
+    }
+
+    if (rule_suspicious_process){
+        result.suspicious = true;
+        result.risk_score += 10;
+        strcat(result.reason, "\n\t• Suspicious executable name.\nConfidence: 10%%");        
     }
 
     if (!result.suspicious){

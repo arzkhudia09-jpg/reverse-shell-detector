@@ -25,6 +25,7 @@ int main(){
             DetectionResult result = analyze_process(&process);
 
             printf("\n========================\n");
+            printf("\n------: Process Details :------\n");
             printf("Found file: %d\n", PID);
             printf("Name: %s\n", process.name);
             printf("State: %s\n", process.state);
@@ -32,9 +33,9 @@ int main(){
             printf("PPID: %d\n", process.ppid);
             printf("UID: %d\n", process.uid);
             printf("Threads: %d\n", process.threads);
-            
+            printf("\n------: Confidence, Suspiciousness & Mached Rules :------\n");
             printf("Risk Score: %d\n", result.risk_score);
-            printf("Suspicious %s\n", result.suspicious ? "Yes" : "No");
+            printf("Suspicious: %s\n", result.suspicious ? "Yes" : "No");
             printf("Reason\t: %s\n", result.reason);
             printf("========================\n");
         }
