@@ -34,9 +34,9 @@ int main(){
             printf("UID: %d\n", process.uid);
             printf("Threads: %d\n", process.threads);
             printf("\n------: Confidence, Suspiciousness & Mached Rules :------\n");
-            printf("Risk Score: %d\n", result.risk_score);
             printf("Suspicious: %s\n", result.suspicious ? "Yes" : "No");
             printf("Reason\t: %s\n", result.reason);
+            printf("Risk Score: %d\n", result.risk_score);
             printf("========================\n");
         }
     }

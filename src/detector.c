@@ -14,29 +14,37 @@ DetectionResult analyze_process(const ProcessInfo *process){
 
     if (rule_temp_dir){
 
-        result.risk_score += 30;
         result.suspicious = true;
-        strcat(result.reason, "• ⚠️ Executable is running from a temporary directory.\nConfidence: 30%%\n\t");
+        strcat(result.reason, "\n\t• ⚠️ Executable is running from a temporary directory.");
 
+        if (rule_suspicious_process){
+        strcat(result.reason, "\n\t• Suspicious executable name.");        
+        result.risk_score += 40;
+        }
+        result.risk_score += 30;
     }
 
     if (rule_deleted_exe){
 
         result.suspicious = true;
+        strcat(result.reason, "\n\t• ⚠️ Running process points to a deleted executable.");
+        
+        if (rule_suspicious_process){
+            strcat(result.reason, "\n\t• Suspicious executable name.");        
+            result.risk_score += 50;
+        }
         result.risk_score += 40;
-        strcat(result.reason, "• ⚠️ Running process points to a deleted executable..\nConfidence: 40%%\n\t");
     }
 
     if (rule_parent_name){
         result.suspicious = true;
+        strcat(result.reason, "\n\t• ⚠️ Running process points suspicious parent process.");
+        
+        if (rule_suspicious_process){
+            result.risk_score += 30;
+            strcat(result.reason, "\n\t• Suspicious executable name.");        
+        }        
         result.risk_score += 20;
-        strcat(result.reason, "• ⚠️ Running process points suspicious parent process.\nConfidence: 20%%\n\t");        
-    }
-
-    if (rule_suspicious_process){
-        result.suspicious = true;
-        result.risk_score += 10;
-        strcat(result.reason, "• Suspicious executable name.\nConfidence: 10%%\n\t");        
     }
 
     if (!result.suspicious){
